@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TeamController;
+
 use App\Http\Controllers\Password_listController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,7 +42,7 @@ Route::middleware(['auth', 'verified', 'google2fa'])->group(function () {
     })->name('2fa');
 
     Route::post('/2fa', function () {
-
+        
         return redirect(route('dashboard'));
         //return redirect(route('home'));
 
@@ -86,3 +88,11 @@ Route::get('passmana',[UserController::class,'password_manage']);
 Route::get('g_passmana',[UserController::class,'g_password_manage']);
 Route::get('pass_add',[Password_listController::class,'password_add']);
 Route::post('store',[Password_listController::class,'store']);
+
+Route::middleware('auth')->group(function(){
+    Route::get('groups',[TeamController::class,'group_manage']);
+    Route::get('groups/create',[TeamController::class,'group_create']);
+    Route::post('groups/store',[TeamController::class,'store']);
+    Route::get('groups/manage',[TeamController::class,'group_management']);
+    Route::get('groups/manage/delete',[TeamController::class,'group_delete']);
+});

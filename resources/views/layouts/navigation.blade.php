@@ -17,6 +17,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    
                 </div>
                 
             </div>
@@ -54,6 +55,8 @@
                     </x-slot>
                 </x-dropdown>
             </div>-->
+            
+            <h1>{{ Auth::user()->user_name }}さん</h1>
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
@@ -78,7 +81,7 @@
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
+                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->user_name }}</div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
 

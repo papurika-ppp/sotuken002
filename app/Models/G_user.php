@@ -10,6 +10,8 @@ class G_user extends Model
 {
     use HasFactory;
 
+    protected $fillable =['group_id','user_id','authorizer_flag','withdrawal_flag'];
+
     public function s_user(): BelongsTo
     {
         return $this->belongsTo(S_user::class);

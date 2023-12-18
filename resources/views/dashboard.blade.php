@@ -22,7 +22,7 @@
         <br>
         <div>
             <x-primary-button>
-                <a href="/passlis" class="btn_1">グループ管理</a>
+                <a href="/groups" class="btn_1">グループ管理</a>
             </x-primary-button>
         </div>
         <br>

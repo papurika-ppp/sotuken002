@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Team extends Model
 {
     use HasFactory;
+    protected $fillable =['group_id','group_name','user_id'];
 
     public function g_users(): HasMany
     {

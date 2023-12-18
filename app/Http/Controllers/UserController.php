@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\User;
+use App\Models\User_key;
 use App\Models\Password_list;
 use App\Models\G_password_list;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
 
 
 
@@ -66,11 +69,47 @@ class UserController extends Controller
         return redirect();
     }
 
+    public static function privateKeyDecrypt(string $text,$privateKey): string | false
+{
+    
+    $text = base64_decode($text);
+    
+    
+    $decrypted = '';
+    //$publicKeyString = ($publicKey instanceof OpenSSLAsymmetricKey) ? static::getPublicKey($publicKey) : $publicKey;
+    //$publicKeyString = static::getPublicKey($publicKey);
+    $privateKeyString = $privateKey;
+    if ($privateKeyString === false) {
+        return false;
+    }
+    if (openssl_private_decrypt($text, $decrypted, $privateKeyString)) {
+        return $decrypted;
+        //return base64_encode($decrypted);
+    } else {
+        return false;
+    }
+}
+
     public function password_manage(): View
     {
-        
+        $depassword = 'unchi';
         $password = Password_list::where('management_number',$this->request['get']['id'])->get();
-        return view('s_user/password_manage',['password'=>$password,]);
+        $user = User::where('user_id','=',Auth::user()->user_id)->first();
+        $user_key = new User_key;
+        $user_key->setConnection('mysql_second');
+        $user_key= $user_key::where('user_id','=',Auth::user()->user_id)->first();
+        foreach($password as $pass){
+            $depassword = static::privateKeyDecrypt($pass->management_account_password,$user_key->privatekey);
+            //openssl_private_decrypt($pass->management_account_password,$decrypted,$user_key->privatekey);
+            
+       }
+        /*if($user_key->hashpublickey === Hash::make($user->publickey)){
+            
+        }else{
+            $depassword = 'dame';
+        }*/
+
+        return view('s_user/password_manage',['password'=>$password,'depassword'=>$depassword]);
     } 
 
     public function g_password_manage(): View

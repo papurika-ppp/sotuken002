@@ -116,7 +116,13 @@ public static function publicKeySplitEncrypt(string $text,$publicKey, ?int $keyL
 
     public function store(Request $request)
     {
-        
+        /*$validated = $request->validate([
+            'site_name' => 'required|unique:posts|max:255',
+            'url' => 'required',
+            'management_account' => 'required',
+            'management_account_password' => 'required',
+            'comment' => 'required',
+        ]);*/
         
         try {
             // $userインスタンスを作成する

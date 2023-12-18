@@ -42,6 +42,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         //return redirect()->intended(RouteServiceProvider::HOME);
+        
         //return redirect()->intended('ggg');
         return view('s_user/loginauth');
         //ここかえるとこ

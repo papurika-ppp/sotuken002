@@ -61,9 +61,9 @@
 <x-primary-button>
                 <a href="/passlis" >管理パスワード一覧</a>
             </x-primary-button>
+        </div>
 
 </x-app-layout>
-</div>
 
 
         
