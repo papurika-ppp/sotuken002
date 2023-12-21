@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\User;
+use App\Models\Team;
 use App\Models\User_key;
+use App\Models\Group_key;
 use App\Models\Password_list;
 use App\Models\G_password_list;
 use Illuminate\Support\Facades\Auth;
@@ -51,12 +53,13 @@ class UserController extends Controller
     {
         $password_lists = Password_list::where('user_id','=',Auth::user()->user_id)->get();
         $g_password_lists = G_password_list::where('user_id','=',Auth::user()->user_id)->get();
+        $team_list = new Team();
         /*foreach($g_password_lists as $g_password_list)
         {
             $a = $g_password_list->team;
         }*/
         
-        return view('s_user/password_list',['password_lists'=>$password_lists,'g_password_lists'=>$g_password_lists]);
+        return view('s_user/password_list',['password_lists'=>$password_lists,'g_password_lists'=>$g_password_lists,'team_list'=>$team_list]);
     }
 
     public function home(): View
@@ -114,8 +117,20 @@ class UserController extends Controller
 
     public function g_password_manage(): View
     {
+        $g_depassword = 'g_unchi';
         $g_password = G_password_list::where('management_number',$this->request['get']['id'])->get();
-        return view('s_user/g_password_manage',['g_password'=>$g_password]);
+        $group_key = new Group_key;
+        $group_key->setConnection('mysql_second');
+        foreach($g_password as $g_pass){
+            $group_key=$group_key::where('group_id','=',$g_pass->group_id)->first();
+
+        }
+        foreach($g_password as $g_pass){
+            $g_depassword = static::privateKeyDecrypt($g_pass->management_account_password,$group_key->privatekey);
+            //openssl_private_decrypt($pass->management_account_password,$decrypted,$user_key->privatekey);
+            
+       }
+        return view('s_user/g_password_manage',['g_password'=>$g_password,'g_depassword'=>$g_depassword]);
     } 
 
     

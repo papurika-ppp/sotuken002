@@ -20,20 +20,26 @@
     <table>
   
   <tbody>
-    <tr><th>サイト名</th><th>URL</th><th>備考</th><th>グループ名</th></tr>
+    <tr><th>サイト名</th><th>URL</th><th>備考</th><th>作成日</th><th>グループ名</th></tr>
     @foreach ($password_lists as $password_list)
-                <tr data-href="/passmana?id=<?= $password_list->management_number ?>" class="trr"><td>{{ $password_list->site_name}}</td><td>{{ $password_list->url}}</td><td>{{ $password_list->comment}}</td><td>{{ $password_list->regist_date}}</td><td></td></tr>
+                <tr data-href="/passmana?id=<?= $password_list->management_number ?>" class="trr"><td>{{ $password_list->site_name}}</td><td>{{ $password_list->url}}</td><td>{{ $password_list->comment}}</td><td>{{ $password_list->created_at}}</td><td></td></tr>
                
     @endforeach
     @foreach ($g_password_lists as $g_password_list)
-                <tr><td>{{ $g_password_list->site_name}}</td><td>{{ $g_password_list->url}}</td><td>{{ $g_password_list->comment}}</td><td>{{ $g_password_list->regist_date}}</td><td></td><td><a href="/passmana?id=<?= $password_list->management_number ?>" class="btn_1">詳細</a></td></tr>
+    <?php $name = $team_list::select('group_name')->where('group_id','=',$g_password_list->group_id)->first(); ?>
+                <tr data-href="/g_passmana?id=<?= $g_password_list->management_number ?>" class="trr"><td>{{ $g_password_list->site_name}}</td><td>{{ $g_password_list->url}}</td><td>{{ $g_password_list->comment}}</td><td>{{ $password_list->created_at}}</td><td>{{ $name->group_name}}</td></tr>
                
     @endforeach
   </tbody>
 </table>
 <div class="flex items-center gap-4 mt-4">
                     <x-primary-button>
-                    <a href="/pass_add" class="btn_1">追加</a>
+                    <a href="/pass_add" class="btn_1">管理パスワード追加</a>
+                    </x-primary-button>
+                </div>
+                <div class="flex items-center gap-4 mt-4">
+                    <x-primary-button>
+                    <a href="/g_pass_add" class="btn_1">グループ管理パスワード追加</a>
                     </x-primary-button>
                 </div>
    

@@ -20,9 +20,9 @@
         <table>
   
   <tbody>
-    <tr><th>サイト名</th><th>URL</th><th>備考</th><th>作成日</th><th>管理パスワード</th></tr>
+    <tr><th>サイト名</th><th>URL</th><th>備考</th><th>作成日</th></tr>
     @foreach ($password as $pass)
-    <tr><td>{{ $pass->site_name}}</td><td>{{ $pass->url}}</td><td>{{ $pass->comment}}</td><td>{{ $pass->created_at}}</td><td>{{ $depassword}}</td></tr>
+    <tr><td>{{ $pass->site_name}}</td><td>{{ $pass->url}}</td><td>{{ $pass->comment}}</td><td>{{ $pass->created_at}}</td></tr>
     @endforeach
   </tbody>
 </table>
@@ -37,10 +37,12 @@
     </div>
     </div>
     </div>
-        
     
-    
-
+    <div class="flex items-center justify-center my-4">
+<x-primary-button>
+                <a href="/passlis" >管理パスワード一覧</a>
+            </x-primary-button>
+        </div>
 
 
 

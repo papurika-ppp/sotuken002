@@ -87,7 +87,9 @@ Route::get('passlis',[UserController::class,'password_list']);
 Route::get('passmana',[UserController::class,'password_manage']);
 Route::get('g_passmana',[UserController::class,'g_password_manage']);
 Route::get('pass_add',[Password_listController::class,'password_add']);
+Route::get('g_pass_add',[Password_listController::class,'g_password_add']);
 Route::post('store',[Password_listController::class,'store']);
+Route::post('g_store',[Password_listController::class,'g_store']);
 
 Route::middleware('auth')->group(function(){
     Route::get('groups',[TeamController::class,'group_manage']);

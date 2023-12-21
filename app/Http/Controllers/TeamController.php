@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Team;
+use App\Models\Group_key;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\G_user;
 
@@ -20,6 +22,34 @@ class TeamController extends Controller
         //リクエストパラメーター
         $this->request['get'] = $_GET;
         $this->request['post'] = $_POST;
+    }
+
+    public static function createKey(?array $options = [
+        'digest_alg' => 'sha256',
+        'private_key_bits' => 2048,
+        'private_key_type' => OPENSSL_KEYTYPE_RSA,
+    ])//: OpenSSLAsymmetricKey | false
+    {
+        return openssl_pkey_new($options);
+    }
+
+    public static function getPublicKey($instance): string | false
+    {
+        $details = openssl_pkey_get_details($instance);
+        if ($details === false) {
+            return false;
+        }
+        return $details['key'];
+    }
+    
+    public static function getPrivateKey($instance): string | false
+    {
+        $privateKey = '';
+        if (openssl_pkey_export($instance, $privateKey)) {
+            return $privateKey;
+        } else {
+            return false;
+        }
     }
 
     public function group_manage(): View
@@ -46,11 +76,18 @@ class TeamController extends Controller
     {
         
         
+        
         try {
+            $group_key = new Group_key;
+            $group_key->setConnection('mysql_second');
+            $instance = static::createKey();
+            $publicKey = static::getPublicKey($instance);
+            $privatekey = static::getPrivateKey($instance);
             //teamテーブル
             $team_list = new Team();
             $team_list->group_name = $request->input('group_name');
             $team_list->user_id = Auth::user()->user_id;
+            $team_list->publickey = $publicKey;
             //$password_list->regist_date = ;
             // データベースに保存
             $team_list->save();
@@ -62,6 +99,11 @@ class TeamController extends Controller
             $g_user->authorizer_flag = 1;
             $g_user->withdrawal_flag = 0;
             $g_user->save();
+
+            $group_key->group_id = $group_id->group_id;
+            $group_key->privatekey = $privatekey;
+            $group_key->hashpublickey = Hash::make($publicKey);
+            $group_key->save();
                     return redirect('/groups')->with(['message', '登録が完了しました！']);
             } catch (\Exception $e) {
                 return back()->with('message', '登録に失敗しました。' . $e->getMessage());

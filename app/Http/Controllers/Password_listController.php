@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\Password_list;
+use App\Models\G_password_list;
 use App\Models\User;
+use App\Models\Team;
+use App\Models\G_user;
 use Illuminate\Support\Facades\Auth;
 use DateTime;
 //use Illuminate\Contracts\View\View;
@@ -24,6 +27,17 @@ class Password_listController extends Controller
     {
         
        return view('password_list/passcreate');
+    }
+
+    public function g_password_add(): View
+    {
+        //$team_list = [];
+        $team = new Team();
+        $g_user = G_user::where('user_id','=',Auth::user()->user_id)->get();
+        /*foreach($g_user as $g_us){
+            $team_list = Team::select('group_name')->where('group_id','=',$g_us->group_id)->first();
+        }*/
+       return view('password_list/g_passcreate',['team_list'=>$g_user,'team'=>$team]);
     }
 
     public static function createKey(?array $options = [
@@ -106,6 +120,9 @@ public static function publicKeySplitEncrypt(string $text,$publicKey, ?int $keyL
 
 
 
+    public function modify(){
+
+    }
 
 
 
@@ -116,16 +133,16 @@ public static function publicKeySplitEncrypt(string $text,$publicKey, ?int $keyL
 
     public function store(Request $request)
     {
-        /*$validated = $request->validate([
-            'site_name' => 'required|unique:posts|max:255',
-            'url' => 'required',
-            'management_account' => 'required',
-            'management_account_password' => 'required',
-            'comment' => 'required',
-        ]);*/
         
         try {
             // $userインスタンスを作成する
+            /*$validated = $request->validate([
+                'site_name' => 'required|unique:posts|max:255',
+                'url' => 'required',
+                'management_account' => 'required',
+                'management_account_password' => 'required',
+                'comment' => 'required',
+            ]);*/
             $password_list = new Password_list();
      
             //$user = new User();
@@ -142,7 +159,7 @@ public static function publicKeySplitEncrypt(string $text,$publicKey, ?int $keyL
             $password_list->site_name = $request->input('site_name');
             $password_list->url = $request->input('url');
             $password_list->management_account = $request->input('management_account');
-            $password_list->management_account_password = $this->publicKeySplitEncrypt($request->input('management_account_password'),$publicKey);
+            $password_list->management_account_password = static::publicKeySplitEncrypt($request->input('management_account_password'),$publicKey);
             $password_list->comment = $request->input('comment');
             
             //$password_list->regist_date = ;
@@ -150,6 +167,50 @@ public static function publicKeySplitEncrypt(string $text,$publicKey, ?int $keyL
      
             // データベースに保存
             $password_list->save();
+            
+                     return redirect('/passlis')->with(['message', '登録が完了しました！']);
+             } catch (\Exception $e) {
+                 return back()->with('message', '登録に失敗しました。' . $e->getMessage());
+             }
+    }
+
+    public function g_store(Request $request)
+    {
+        /*$validated = $request->validate([
+            'site_name' => 'required|unique:posts|max:255',
+            'url' => 'required',
+            'management_account' => 'required',
+            'management_account_password' => 'required',
+            'comment' => 'required',
+        ]);*/
+        
+        try {
+            // $userインスタンスを作成する
+            $g_password_list = new G_password_list();
+     
+            //$user = new User();
+
+            $team_key = Team::where('group_id','=',$request->group_id)->first();
+            $publicKey = $team_key->publickey;
+
+
+            //$instance = $this->createKey();
+            //$publicKey = $this->getPublicKey($instance);
+            //$privatekey = $this->getPrivateKey($instance);
+            // 投稿フォームから送信されたデータを取得し、インスタンスの属性に代入する
+            $g_password_list->user_id = Auth::user()->user_id;
+            $g_password_list->site_name = $request->input('site_name');
+            $g_password_list->url = $request->input('url');
+            $g_password_list->management_account = $request->input('management_account');
+            $g_password_list->management_account_password = static::publicKeySplitEncrypt($request->input('management_account_password'),$publicKey);
+            $g_password_list->comment = $request->input('comment');
+            $g_password_list->group_id = $request->group_id;
+            
+            //$password_list->regist_date = ;
+
+     
+            // データベースに保存
+            $g_password_list->save();
             
                      return redirect('/passlis')->with(['message', '登録が完了しました！']);
              } catch (\Exception $e) {
